@@ -86,6 +86,10 @@ The scenario presented in this codebase is simple and contrived, and it should b
 
 12. You may now POST to the Function app URL from any other service to initiate pipeline runs without needing to manage PATs or Secrets.
 
+## Architecture
+
+![Architecture Diagram](./docs/diagrams/diagram.png)
+
 ## Optional enhancements:
 
 - Optionally consider configuring the Azure DevOps organization name, Tenant ID, and Managed Identity Client ID as settings in `local.settings.json` and in the Azure Function App configuration. In this sample, the settings are hardcoded in the code for simplicity.
