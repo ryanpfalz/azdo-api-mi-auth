@@ -26,7 +26,7 @@ The scenario presented in this codebase is simple and contrived, and it should b
 
 2. Add the code from `AzDOFunction/AzDOFunction/Function1.cs` to the `.cs` file in your project.
 
-3. Open the Terminal in Visual Studio (View > Terminal), `cd` to your project directory, and run the following to install the required project dependencies (package versions current as of writing):
+3. Open the Terminal in Visual Studio (View > Terminal), `cd` to your project directory, and run the following commands to install the required project dependencies (package versions current as of writing):
 
    ```
    dotnet add package Microsoft.VisualStudio.Services.InteractiveClient --version 19.232.0-preview
