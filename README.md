@@ -90,7 +90,7 @@ The scenario presented in this codebase is simple and contrived, and it should b
 
 ![Architecture Diagram](./docs/diagrams/diagram.png)
 
-## Optional enhancements:
+## Optional enhancements
 
 - Optionally consider configuring the Azure DevOps organization name, Tenant ID, and Managed Identity Client ID as settings in `local.settings.json` and in the Azure Function App configuration. In this sample, the settings are hardcoded in the code for simplicity.
 - Consider using Infrastructure as Code to create the Function App and assign the user-assigned Managed Identity to it.
