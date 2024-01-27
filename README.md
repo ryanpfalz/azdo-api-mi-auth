@@ -22,7 +22,7 @@ The scenario presented in this codebase is simple and contrived, and it should b
 
 ## Running the sample
 
-1. [Create a new .NET 6.0 Function project in Visual Studio](https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-your-first-function-visual-studio). 
+1. [Create a new .NET 6.0 Function project in Visual Studio](https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-your-first-function-visual-studio).
 
 2. Add the code from `AzDOFunction/AzDOFunction/Function1.cs` to the `.cs` file in your project.
 
@@ -84,12 +84,13 @@ The scenario presented in this codebase is simple and contrived, and it should b
 
     - On success, you will see the message, "Pipeline run started". If you navigate to the Pipeline in Azure DevOps, you will see a new run.
 
-12. You may now POST to the Function app URL from any other service.
+12. You may now POST to the Function app URL from any other service to initiate pipeline runs without needing to manage PATs or Secrets.
 
 ## Optional enhancements:
 
 - Optionally consider configuring the Azure DevOps organization name, Tenant ID, and Managed Identity Client ID as settings in `local.settings.json` and in the Azure Function App configuration. In this sample, the settings are hardcoded in the code for simplicity.
 - Consider using Infrastructure as Code to create the Function App and assign the user-assigned Managed Identity to it.
+- Consider building a CI/CD pipeline for deploying the Function App.
 
 ## Additional Resources
 
