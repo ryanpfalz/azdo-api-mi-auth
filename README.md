@@ -1,6 +1,6 @@
-| Page Type | Languages        | Key Services                                                    | Tools         |
-| --------- | ---------------- | --------------------------------------------------------------- | ------------- |
-| Sample    | C# (.NET Core 6) | Azure Functions <br> Azure User-Assigned Managed Identity | Visual Studio |
+| Page Type | Languages        | Key Services                                              | Tools                                         |
+| --------- | ---------------- | --------------------------------------------------------- | --------------------------------------------- |
+| Sample    | C# (.NET Core 6) | Azure Functions <br> Azure User-Assigned Managed Identity | Visual Studio <br> Azure Functions Core Tools |
 
 ---
 
