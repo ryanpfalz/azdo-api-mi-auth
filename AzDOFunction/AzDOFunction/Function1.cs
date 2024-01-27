@@ -54,13 +54,13 @@ namespace Company.Function
         {
             if (!int.TryParse(req.Query["pipelineId"], out int pipelineId))
             {
-                return new BadRequestObjectResult($"Invalid Pipeline ID: {req.Query["workItemId"]}.");
+                return new BadRequestObjectResult($"Invalid Pipeline ID: {req.Query["pipelineId"]}.");
             }
 
             string projectName = req.Query["projectName"];
             if (string.IsNullOrEmpty(projectName))
             {
-                return new BadRequestObjectResult($"Invalid Project Name: {req.Query["workItemId"]}.");
+                return new BadRequestObjectResult($"Invalid Project Name: {req.Query["projectName"]}.");
             }
 
             //hardcoded
