@@ -22,7 +22,7 @@ The scenario presented in this codebase is simple and contrived, and it should b
 
 ## Running the sample
 
-1. [Create a new Function project in Visual Studio](https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-your-first-function-visual-studio)
+1. [Create a new .NET 6.0 Function project in Visual Studio](https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-your-first-function-visual-studio). 
 
 2. Add the code from `AzDOFunction/AzDOFunction/Function1.cs` to the `.cs` file in your project.
 
