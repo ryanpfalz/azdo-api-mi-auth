@@ -7,10 +7,10 @@ using Azure.Core;
 using Azure.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Pipelines.WebApi;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.TeamFoundation.WorkItemTracking.WebApi;
 using Microsoft.VisualStudio.Services.Client;
 using Microsoft.VisualStudio.Services.WebApi;
 
@@ -20,11 +20,11 @@ namespace Company.Function
     {
         public const string AdoBaseUrl = "https://dev.azure.com";
 
-        public const string AdoOrgName = "ryanpfalz-external";
+        public const string AdoOrgName = "<your-org-name>";
 
-        public const string AadTenantId = "2d6ef599-ac22-4676-8f4e-9837cc407354";
+        public const string AadTenantId = "<your-tenant-guid>";
         // ClientId for User Assigned Managed Identity. Leave null for System Assigned Managed Identity
-        public const string AadUserAssignedManagedIdentityClientId = null;
+        public const string AadUserAssignedManagedIdentityClientId = "<your-user-assigned-mi-client-guid>";
 
         // Credentials object is static so it can be reused across multiple requests. This ensures
         // the internal token cache is used which reduces the number of outgoing calls to Azure AD to get tokens.
@@ -49,32 +49,41 @@ namespace Company.Function
 
         [FunctionName("TestMIHttpTrigger")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            //if (!int.TryParse(req.Query["workItemId"], out int workItemId))
-            //{
-            //    return new BadRequestObjectResult($"Invalid Work item ID: {req.Query["workItemId"]}.");
-            //}
+            if (!int.TryParse(req.Query["pipelineId"], out int pipelineId))
+            {
+                return new BadRequestObjectResult($"Invalid Pipeline ID: {req.Query["workItemId"]}.");
+            }
 
-            var workItemId = 1;
+            string projectName = req.Query["projectName"];
+            if (string.IsNullOrEmpty(projectName))
+            {
+                return new BadRequestObjectResult($"Invalid Project Name: {req.Query["workItemId"]}.");
+            }
+
+            //hardcoded
+            //var pipelineId = 1;
+            //var projectName = "Sandbox";
 
             var vssConnection = await CreateVssConnection();
 
-            var workItemTrackingHttpClient = vssConnection.GetClient<WorkItemTrackingHttpClient>();
-
             try
             {
-                var workItem = await workItemTrackingHttpClient.GetWorkItemAsync(workItemId);
+                var pipelineClient = new Microsoft.Azure.Pipelines.WebApi.PipelinesHttpClient(vssConnection.Uri, vssConnection.Credentials);
 
-                workItem.Fields.TryGetValue("System.Title", out var title);
-                var responseMessage = $"Work item '{title}' fetched. This HTTP triggered function executed successfully.";
-                return new OkObjectResult(responseMessage);
+                var response = await pipelineClient.RunPipelineAsync(new RunPipelineParameters(), projectName, pipelineId);
+
+                return response != null
+                    ? (ActionResult)new OkObjectResult($"Pipeline run started: {response.Id}")
+                    : new BadRequestObjectResult("Pipeline run failed to start");
             }
             catch (Exception ex)
             {
                 return new ObjectResult(ex.Message);
             }
+
         }
 
         private static async Task<VssConnection> CreateVssConnection()
