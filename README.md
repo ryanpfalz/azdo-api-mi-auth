@@ -86,6 +86,32 @@ The scenario presented in this codebase is simple and contrived, and it should b
 
 12. You may now POST to the Function app URL from any other service to initiate pipeline runs without needing to manage PATs or Secrets.
 
+## Setting Variables at Queue Time
+
+If you want to be able to set variables, create a pipeline variable in Azure DevOps and select 'Settable at queue time' on the variables tab of the pipeline editor. Read more at [https://aka.ms/AzPipelines/SettingVariablesAtQueueTime](https://aka.ms/AzPipelines/SettingVariablesAtQueueTime).
+
+![Settable at queue time](./docs/images/settableatqueuetime.png)
+
+Ensure you also update the variable and set 'Let users override this value when running this pipeline'.
+
+![Override](./docs/images/overridevariable.png)
+
+In your pipeline, you can now reference the variable as `$(variableName)` (in the example, this would be `$(branch)`).
+
+To pass your variable to the pipeline when calling the Function, add a JSON object to the body, where the key matches the variable name and the value is the value you want to set. In your `.cs` file, update the `JsonKey` variable to the name of the key you want to use. For example, in the provided code, the key is `branch`, so the JSON object passed into the REST API body would look like:
+
+```json
+{
+  "branch": "your-branch-name"
+}
+```
+
+Note that in this example, I hardcoded the JsonKey, but you can modify the code to more dynamically set the key.
+
+If you do not want to use variables, you can comment out the block of code between the comments 'the below/above code is used to set a pipeline variable'.
+
+This example sets a single variable, but you can modify the code to set multiple variables.
+
 ## Architecture
 
 ![Architecture Diagram](./docs/diagrams/diagram.png)

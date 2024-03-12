@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,8 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Services.Client;
 using Microsoft.VisualStudio.Services.WebApi;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Company.Function
 {
@@ -73,7 +76,32 @@ namespace Company.Function
             {
                 var pipelineClient = new Microsoft.Azure.Pipelines.WebApi.PipelinesHttpClient(vssConnection.Uri, vssConnection.Credentials);
 
-                var response = await pipelineClient.RunPipelineAsync(new RunPipelineParameters(), projectName, pipelineId);
+                // the below code is used to set a pipeline variable //
+                // note: If you want to be able to set variables, then edit the pipeline in Azure DevOps and select Settable at queue time on the variables tab of the pipeline editor.
+
+                // Reading and parsing the JSON body
+                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                JObject jsonData = JObject.Parse(requestBody);
+
+                //Console.WriteLine(jsonData);
+
+                string JsonKey = "branch"; // hardcoded example - change this to your variable name or modify how to extract the variable name from the JSON body
+                JObject jsonObject = new JObject
+                {
+                    { "IsSecret", false },
+                    { "Value", jsonData[JsonKey]?.ToString() }
+                };
+                string jsonString = jsonObject.ToString();
+                Variable var = JsonConvert.DeserializeObject<Variable>(jsonString);
+
+                var runPipelineParams = new RunPipelineParameters();
+                runPipelineParams.Variables.Add(JsonKey, var);
+
+                var response = await pipelineClient.RunPipelineAsync(runPipelineParams, projectName, pipelineId);
+                // the above code is used to set a pipeline variable //
+
+                // if you don't want to set a pipeline variable, then use the below code
+                //var response = await pipelineClient.RunPipelineAsync(new RunPipelineParameters(), projectName, pipelineId);
 
                 return response != null
                     ? (ActionResult)new OkObjectResult($"Pipeline run started: {response.Id}")
