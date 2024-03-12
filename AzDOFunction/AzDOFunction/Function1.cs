@@ -85,7 +85,7 @@ namespace Company.Function
 
                 //Console.WriteLine(jsonData);
 
-                string JsonKey = "branch";
+                string JsonKey = "branch"; // hardcoded example - change this to your variable name or modify how to extract the variable name from the JSON body
                 JObject jsonObject = new JObject
                 {
                     { "IsSecret", false },

@@ -106,6 +106,8 @@ To pass your variable to the pipeline when calling the Function, add a JSON obje
 }
 ```
 
+Note that in this example, I hardcoded the JsonKey, but you can modify the code to more dynamically set the key.
+
 If you do not want to use variables, you can comment out the block of code between the comments 'the below/above code is used to set a pipeline variable'.
 
 This example sets a single variable, but you can modify the code to set multiple variables.
