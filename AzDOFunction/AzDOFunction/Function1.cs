@@ -13,9 +13,11 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Services.Client;
+using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.WebApi;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using static Microsoft.Azure.Pipelines.WebApi.PipelinesResources;
 
 namespace Company.Function
 {
@@ -83,25 +85,37 @@ namespace Company.Function
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 JObject jsonData = JObject.Parse(requestBody);
 
-                //Console.WriteLine(jsonData);
+                // TODO: this needs to be modified to work alongside the branch logic below
+                // How to handle JSON to pass down to the pipeline as a parameter/variable
+                //string JsonKey = "todo"; // hardcoded example - change this to your variable name or modify how to extract the variable name from the JSON body
+                //JObject jsonObject = new JObject
+                //{
+                //    { "IsSecret", false },
+                //    { "Value", jsonData[JsonKey]?.ToString() }
+                //};
+                //string jsonString = jsonObject.ToString();
+                //Variable var = JsonConvert.DeserializeObject<Variable>(jsonString);
+                //var runPipelineParams = new RunPipelineParameters();
+                //runPipelineParams.Variables.Add(JsonKey, var);
 
-                string JsonKey = "branch"; // hardcoded example - change this to your variable name or modify how to extract the variable name from the JSON body
-                JObject jsonObject = new JObject
-                {
-                    { "IsSecret", false },
-                    { "Value", jsonData[JsonKey]?.ToString() }
-                };
-                string jsonString = jsonObject.ToString();
-                Variable var = JsonConvert.DeserializeObject<Variable>(jsonString);
+                // Select which branch to run the pipeline on
+                var PipelineResource = new PipelineResourceParameters();
+                var parameters = new RunPipelineParameters();
 
-                var runPipelineParams = new RunPipelineParameters();
-                runPipelineParams.Variables.Add(JsonKey, var);
+                // create json object to pass as a resource
+                string branchName = jsonData["branch"].ToString();
+                string branch = $"refs/heads/{branchName}";
+                JObject refNameObject = new JObject { ["refName"] = branch };
+                JObject selfObject = new JObject { ["self"] = refNameObject };
+                JObject repositoriesObject = new JObject { ["Repositories"] = selfObject };
+                string jsonString = repositoriesObject.ToString();
 
-                var response = await pipelineClient.RunPipelineAsync(runPipelineParams, projectName, pipelineId);
-                // the above code is used to set a pipeline variable //
+                // add the branch to the pipeline resource
+                RunResourcesParameters resourcesParameters = JsonConvert.DeserializeObject<RunResourcesParameters>(jsonString);
+                resourcesParameters.Pipelines.Add($"{pipelineId}", PipelineResource);
+                parameters.Resources = resourcesParameters;
 
-                // if you don't want to set a pipeline variable, then use the below code
-                //var response = await pipelineClient.RunPipelineAsync(new RunPipelineParameters(), projectName, pipelineId);
+                var response = await pipelineClient.RunPipelineAsync(parameters, projectName, pipelineId);
 
                 return response != null
                     ? (ActionResult)new OkObjectResult($"Pipeline run started: {response.Id}")
