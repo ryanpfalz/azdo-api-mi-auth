@@ -31,6 +31,7 @@ namespace Company.Function
         // ClientId for User Assigned Managed Identity. Leave null for System Assigned Managed Identity
         public const string AadUserAssignedManagedIdentityClientId = "<your-user-assigned-mi-client-guid>";
 
+
         // Credentials object is static so it can be reused across multiple requests. This ensures
         // the internal token cache is used which reduces the number of outgoing calls to Azure AD to get tokens.
         // 
@@ -105,10 +106,7 @@ namespace Company.Function
                 // create json object to pass as a resource
                 string branchName = jsonData["branch"].ToString();
                 string branch = $"refs/heads/{branchName}";
-                JObject refNameObject = new JObject { ["refName"] = branch };
-                JObject selfObject = new JObject { ["self"] = refNameObject };
-                JObject repositoriesObject = new JObject { ["Repositories"] = selfObject };
-                string jsonString = repositoriesObject.ToString();
+                string jsonString = JObject.FromObject(new { Repositories = new { self = new { refName = branch } } }).ToString();
 
                 // add the branch to the pipeline resource
                 RunResourcesParameters resourcesParameters = JsonConvert.DeserializeObject<RunResourcesParameters>(jsonString);
